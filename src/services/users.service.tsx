@@ -1,26 +1,26 @@
 import axios from "./axios.service";
 
-export function registerService(data: any) {
-
-  axios.post("users/register", data)
-  .then(response=>{
-    console.log("login OK: ", response)
-  })
-  ;
-}
-
 export function loginService(data: any) {
-
-  axios.post("users/login", data)
-  .then(response=>{
-
-    if(!response.data.token) {console.log("no hay token")}
-    else{
-        localStorage.setItem("token",response.data.token)
+  return axios.post("users/login", data).then((response) => {
+    if (!response.data.token) {
+      console.log("no hay token");
+      return null;
     }
-    console.log(response.data.token)
-  })
-  ;
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("email", response.data.usuario.email);
+    return response.data.token;
+  });
 }
 
+export function registerService(data: any) {
+  return axios.post("users/register", data).then((response) => {
+    console.log("register OK: ", response);
+    return response;
+  });
+}
 
+export async function userInfoService(){
+    const email=localStorage.getItem("email")
+    const payload={email}
+    return await axios.post("users/info",payload )
+}
